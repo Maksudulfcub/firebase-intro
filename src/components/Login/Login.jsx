@@ -26,9 +26,11 @@ const Login = () => {
         signInWithPopup(auth, githubProvider)
             .then((result) => {
                 console.log(result.user);
+                setUser(result.user)
             })
             .catch((error) => {
                 console.log(error);
+                setUser(null)
             })
     }
 
@@ -61,7 +63,7 @@ const Login = () => {
                             </fieldset>
 
                             {
-                                user ? <button onClick={handleGoogleLogOut}>Google Log Out</button> :
+                                user ? <button onClick={handleGoogleLogOut}>Log Out</button> :
                                     <>
                                         <button onClick={handleSignInGoogle}>Sign in with Google</button>
                                         <button onClick={handleGithubSignIn}>Login with GitHub</button>
@@ -72,9 +74,9 @@ const Login = () => {
                     <div>
                         {
                             user && <div>
-                                <h4>Name : {user.displayName}</h4>
-                                <p>Email : {user.email}</p>
-                                <img src={user.photoURL} alt="" />
+                                <h4 className="font-bold">Name : {user.displayName}</h4>
+                                <p className="text-sm text-gray-500">Email : {user.email}</p>
+                                <img className="rounded-full w-[100px]" src={user.photoURL} alt="" />
                             </div>
                         }
                     </div>
