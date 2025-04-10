@@ -1,15 +1,31 @@
 
+import { useState } from "react";
 import auth from "../../assets/firebase/firebase.init";
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 
 const Login = () => {
 
+    const [user, setUser] = useState(null);
+
     const provider = new GoogleAuthProvider();
+    const githubProvider = new GithubAuthProvider();
 
     const handleSignInGoogle = () => {
         signInWithPopup(auth, provider)
             .then((result) => {
-                console.log(result);
+                console.log(result.user);
+                setUser(result.user);
+            })
+            .catch((error) => {
+                console.log(error);
+                setUser(null)
+            })
+    }
+
+    const handleGithubSignIn = () => {
+        signInWithPopup(auth, githubProvider)
+            .then((result) => {
+                console.log(result.user);
             })
             .catch((error) => {
                 console.log(error);
@@ -17,12 +33,13 @@ const Login = () => {
     }
 
     const handleGoogleLogOut = () => {
-        signOut(auth).then(()=>{
+        signOut(auth).then(() => {
             console.log("Successfully Logged out");
+            setUser(null)
         })
-        .catch((error)=> {
-            console.log(error);
-        })
+            .catch((error) => {
+                console.log(error);
+            })
     }
 
     return (
@@ -42,9 +59,24 @@ const Login = () => {
                                 <div><a className="link link-hover">Forgot password?</a></div>
                                 <button className="btn btn-neutral mt-4">Login</button>
                             </fieldset>
-                            <button onClick={handleSignInGoogle}>Sign in with Google</button>
-                            <button onClick={handleGoogleLogOut}>Google Log Out</button>
+
+                            {
+                                user ? <button onClick={handleGoogleLogOut}>Google Log Out</button> :
+                                    <>
+                                        <button onClick={handleSignInGoogle}>Sign in with Google</button>
+                                        <button onClick={handleGithubSignIn}>Login with GitHub</button>
+                                    </>
+                            }
                         </div>
+                    </div>
+                    <div>
+                        {
+                            user && <div>
+                                <h4>Name : {user.displayName}</h4>
+                                <p>Email : {user.email}</p>
+                                <img src={user.photoURL} alt="" />
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
