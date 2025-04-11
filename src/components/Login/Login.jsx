@@ -1,11 +1,13 @@
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import auth from "../../assets/firebase/firebase.init";
-import { GithubAuthProvider, GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
+import { GithubAuthProvider, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import { Link } from "react-router-dom";
 
 const Login = () => {
 
     const [user, setUser] = useState(null);
+    const emailRef = useRef(null);
 
     const provider = new GoogleAuthProvider();
     const githubProvider = new GithubAuthProvider();
@@ -44,6 +46,40 @@ const Login = () => {
             })
     }
 
+    const handleLogin = (e) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((result) => {
+                console.log(result.user);
+                if(result.user.emailVerified){
+                    console.log('User logged in successfully');
+                } else{
+                    alert('Please verify your email address.')
+                }
+            })
+            .catch((error) => {
+                console.log(error.message);
+            })
+    }
+
+    const handleForgetPass = () => {
+        const email = emailRef.current.value;
+        if (!email) {
+            console.log('Please provide an email !');
+            return;
+        }
+        sendPasswordResetEmail(auth, email)
+            .then(() => {
+                alert('Please check your email inbox.')
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
     return (
         <div>
             <div className="hero bg-base-200 min-h-screen">
@@ -53,14 +89,22 @@ const Login = () => {
                     </div>
                     <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
                         <div className="card-body">
-                            <fieldset className="fieldset">
+                            <form onSubmit={handleLogin} className="fieldset">
                                 <label className="fieldset-label">Email</label>
-                                <input type="email" className="input" placeholder="Email" />
+                                <input
+                                    type="email"
+                                    name="email"
+                                    ref={emailRef}
+                                    className="input"
+                                    placeholder="Email" />
                                 <label className="fieldset-label">Password</label>
-                                <input type="password" className="input" placeholder="Password" />
-                                <div><a className="link link-hover">Forgot password?</a></div>
+                                <input type="password" name="password" className="input" placeholder="Password" />
+                                <div><a onClick={handleForgetPass} className="link link-hover">Forgot password?</a></div>
+                                <div>
+                                    <p>New user here? Please <Link to="/register">Register</Link></p>
+                                </div>
                                 <button className="btn btn-neutral mt-4">Login</button>
-                            </fieldset>
+                            </form>
 
                             {
                                 user ? <button onClick={handleGoogleLogOut}>Log Out</button> :
