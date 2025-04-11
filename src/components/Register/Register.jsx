@@ -5,19 +5,37 @@ import { useState } from "react";
 const Register = () => {
 
     const [regError, setRegError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [showPass, setShowPass] = useState(false);
+
+    const handlePassShow = () => {
+        setShowPass(!showPass);
+    }
 
     const handleRegister = e => {
         e.preventDefault();
         const email = e.target.email.value;
         const password = e.target.password.value;
 
+        if (password.length < 6) {
+            setRegError('Password at least 6 characters')
+            return;
+        } else if (!/[A-Z]/.test(password)) {
+            setRegError('At least one Uppercase needed.')
+            return;
+        }
+
+        setRegError('');
+        setSuccess('');
+
         createUserWithEmailAndPassword(auth, email, password)
             .then((result) => {
                 console.log(result.user);
+                setSuccess('User created successfully !')
             })
             .catch((error) => {
                 console.log(error);
-                setRegError(error);
+                setRegError(error.message);
             })
     }
 
@@ -35,11 +53,26 @@ const Register = () => {
                         <div className="card-body">
                             <form onSubmit={handleRegister} className="form text-left">
                                 <label className="form-label">Name</label>
-                                <input type="text" name="name" className="input" placeholder="Name" />
+                                <input type="text" name="name" className="input" placeholder="Name" required />
                                 <label className="form-label">Email</label>
-                                <input type="email" name="email" className="input" placeholder="Email" />
+                                <input type="email" name="email" className="input" placeholder="Email" required />
                                 <label className="form-label">Password</label>
-                                <input type="password" name="password" className="input" placeholder="Password" />
+                                <input
+                                    type={showPass ? "text" : "password"}
+                                    name="password"
+                                    className="input relative"
+                                    placeholder="Password" required />
+                                <span className="absolute -ml-10 mt-2 font-semibold" onClick={handlePassShow}>
+                                    {
+                                        showPass ? "Hide" : "Show"
+                                    }
+                                </span>
+                                {
+                                    regError && <h4 className="font-semibold text-red-500">{regError}</h4>
+                                }
+                                {
+                                    success && <h3 className="font-semibold text-green-500">{success}</h3>
+                                }
                                 <button className="btn w-full btn-primary mt-4">Register</button>
                             </form>
                         </div>
