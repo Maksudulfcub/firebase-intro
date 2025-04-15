@@ -1,9 +1,12 @@
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
-import auth from "../../assets/firebase/firebase.init";
-import { useState } from "react";
+import { sendEmailVerification } from "firebase/auth";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/AuthProvider";
 
 const Register = () => {
+
+    const { createUser } = useContext(AuthContext);
+
 
     const [regError, setRegError] = useState('');
     const [success, setSuccess] = useState('');
@@ -29,15 +32,30 @@ const Register = () => {
         setRegError('');
         setSuccess('');
 
-        createUserWithEmailAndPassword(auth, email, password)
+        // createUserWithEmailAndPassword(auth, email, password)
+        //     .then((result) => {
+        //         console.log(result.user);
+        //         setSuccess('User created successfully !')
+
+        //         sendEmailVerification(result.user)
+        //             .then(() => {
+        //                 alert('Please check your email and get verified.')
+        //             })
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //         setRegError(error.message);
+        //     })
+
+        createUser(email, password)
             .then((result) => {
                 console.log(result.user);
                 setSuccess('User created successfully !')
 
                 sendEmailVerification(result.user)
-                .then(()=>{
-                    alert('Please check your email and get verified.')
-                })
+                    .then(() => {
+                        alert('Please check your email and get verified.')
+                    })
             })
             .catch((error) => {
                 console.log(error);

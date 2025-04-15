@@ -1,10 +1,13 @@
 
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import auth from "../../assets/firebase/firebase.init";
-import { GithubAuthProvider, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import { GithubAuthProvider, GoogleAuthProvider, sendPasswordResetEmail, signInWithPopup, signOut } from "firebase/auth";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/AuthProvider";
 
 const Login = () => {
+
+    const { loginUser } = useContext(AuthContext);
 
     const [user, setUser] = useState(null);
     const emailRef = useRef(null);
@@ -51,12 +54,25 @@ const Login = () => {
         const email = e.target.email.value;
         const password = e.target.password.value;
 
-        signInWithEmailAndPassword(auth, email, password)
+        // signInWithEmailAndPassword(auth, email, password)
+        //     .then((result) => {
+        //         console.log(result.user);
+        //         if (result.user.emailVerified) {
+        //             console.log('User logged in successfully');
+        //         } else {
+        //             alert('Please verify your email address.')
+        //         }
+        //     })
+        //     .catch((error) => {
+        //         console.log(error.message);
+        //     })
+
+        loginUser(email, password)
             .then((result) => {
                 console.log(result.user);
-                if(result.user.emailVerified){
+                if (result.user.emailVerified) {
                     console.log('User logged in successfully');
-                } else{
+                } else {
                     alert('Please verify your email address.')
                 }
             })
