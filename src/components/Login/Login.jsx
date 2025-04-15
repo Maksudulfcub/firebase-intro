@@ -2,7 +2,7 @@
 import { useContext, useRef, useState } from "react";
 import auth from "../../assets/firebase/firebase.init";
 import { GithubAuthProvider, GoogleAuthProvider, sendPasswordResetEmail, signInWithPopup, signOut } from "firebase/auth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthProvider";
 
 const Login = () => {
@@ -14,6 +14,8 @@ const Login = () => {
 
     const provider = new GoogleAuthProvider();
     const githubProvider = new GithubAuthProvider();
+
+    const navigate = useNavigate()
 
     const handleSignInGoogle = () => {
         signInWithPopup(auth, provider)
@@ -70,11 +72,14 @@ const Login = () => {
         loginUser(email, password)
             .then((result) => {
                 console.log(result.user);
+                e.target.reset()
                 if (result.user.emailVerified) {
                     console.log('User logged in successfully');
                 } else {
                     alert('Please verify your email address.')
                 }
+                // use navigate to go Home page directly
+                navigate("/");
             })
             .catch((error) => {
                 console.log(error.message);
