@@ -22,6 +22,7 @@ const Header = () => {
             <NavLink style={{ 'marginRight': '20px' }} to="/">Home</NavLink>
             <NavLink to="/login">Login</NavLink>
             <NavLink to="/register">Register</NavLink>
+            <NavLink to="/orders">Orders</NavLink>
             <div className="navbar-end">
                 {
                     user &&
